@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/loading_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscure = true;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -20,10 +22,13 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacementNamed(context, '/home');
-    }
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(seconds: 2)); // محاكاة طلب للسيرفر
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    Navigator.pushReplacementNamed(context, '/home');
   }
 
   @override
@@ -93,12 +98,10 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
                     const SizedBox(height: 24),
-                    FilledButton(
+                    LoadingButton(
+                      label: 'Login',
                       onPressed: _submit,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        child: Text('Login'),
-                      ),
+                      isLoading: _isLoading,
                     ),
                     TextButton(
                       onPressed: () =>
