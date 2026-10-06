@@ -13,7 +13,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true),
+      theme: _buildTheme(),
       initialRoute: '/',
       routes: {
         '/': (_) => const SplashScreen(),
@@ -21,6 +21,31 @@ class MyApp extends StatelessWidget {
         '/register': (_) => const RegisterScreen(),
         '/home': (_) => const HomeScreen(),
       },
+    );
+  }
+
+  ThemeData _buildTheme() {
+    final base = ThemeData(colorSchemeSeed: Colors.indigo, useMaterial3: true);
+    return base.copyWith(
+      inputDecorationTheme: InputDecorationTheme(
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        ),
+      ),
+      textTheme: base.textTheme.copyWith(
+        headlineMedium: base.textTheme.headlineMedium
+            ?.copyWith(fontWeight: FontWeight.bold),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 1,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      ),
     );
   }
 }

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import '../widgets/app_logo.dart';
+import '../widgets/custom_text_field.dart';
+import '../widgets/loading_button.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -13,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -23,10 +27,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (_formKey.currentState!.validate()) {
-      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-    }
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _isLoading = true);
+    await Future.delayed(const Duration(seconds: 2));
+    if (!mounted) return;
+    setState(() => _isLoading = false);
+    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
   }
 
   @override
@@ -45,27 +52,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    TextFormField(
+                    const AppLogo(size: 48, showName: false),
+                    const SizedBox(height: 24),
+                    CustomTextField(
+                      label: 'Full name',
+                      icon: Icons.person_outline,
                       controller: _nameController,
-                      decoration: const InputDecoration(
-                        labelText: 'Full name',
-                        prefixIcon: Icon(Icons.person_outline),
-                        border: OutlineInputBorder(),
-                      ),
                       validator: (value) =>
                           (value == null || value.trim().length < 2)
                               ? 'Enter your name'
                               : null,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
+                      label: 'Email',
+                      icon: Icons.email_outlined,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
-                        border: OutlineInputBorder(),
-                      ),
                       validator: (value) {
                         if (value == null || value.trim().isEmpty) {
                           return 'Email is required';
@@ -77,39 +80,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
+                      label: 'Password',
+                      icon: Icons.lock_outline,
                       controller: _passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(),
-                      ),
+                      isPassword: true,
                       validator: (value) =>
                           (value == null || value.length < 6)
                               ? 'At least 6 characters'
                               : null,
                     ),
                     const SizedBox(height: 16),
-                    TextFormField(
+                    CustomTextField(
+                      label: 'Confirm password',
+                      icon: Icons.lock_outline,
                       controller: _confirmController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Confirm password',
-                        prefixIcon: Icon(Icons.lock_outline),
-                        border: OutlineInputBorder(),
-                      ),
+                      isPassword: true,
                       validator: (value) => value != _passwordController.text
                           ? 'Passwords do not match'
                           : null,
                     ),
                     const SizedBox(height: 24),
-                    FilledButton(
+                    LoadingButton(
+                      label: 'Register',
                       onPressed: _submit,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        child: Text('Register'),
-                      ),
+                      isLoading: _isLoading,
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context),

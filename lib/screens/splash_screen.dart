@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../widgets/app_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -20,16 +21,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return const Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.account_balance_wallet, size: 80),
-            SizedBox(height: 16),
-            Text('Expense Tracker', style: TextStyle(fontSize: 24)),
-          ],
-        ),
-      ),
+      body: Center(child: AppLogo(size: 90)),
     );
   }
 }
