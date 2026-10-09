@@ -1,20 +1,79 @@
 import 'package:flutter/material.dart';
+import '../models/expense.dart';
+import 'add_expense_screen.dart';
+import 'expense_details_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
-  static const _expenses = [
-    ('Groceries', 45.50, Icons.shopping_cart),
-    ('Fuel', 30.00, Icons.local_gas_station),
-    ('Coffee', 4.25, Icons.coffee),
-    ('Internet bill', 25.00, Icons.wifi),
-    ('Restaurant', 38.75, Icons.restaurant),
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final List<Expense> _expenses = [
+    Expense(
+        title: 'Groceries',
+        amount: 45.50,
+        date: DateTime.now().subtract(const Duration(days: 1)),
+        category: 'Food'),
+    Expense(
+        title: 'Fuel',
+        amount: 30.00,
+        date: DateTime.now().subtract(const Duration(days: 2)),
+        category: 'Transport'),
+    Expense(
+        title: 'Internet bill',
+        amount: 25.00,
+        date: DateTime.now().subtract(const Duration(days: 3)),
+        category: 'Bills'),
   ];
+
+  double get _total => _expenses.fold(0, (sum, e) => sum + e.amount);
+
+  double get _thisMonth {
+    final now = DateTime.now();
+    return _expenses
+        .where((e) => e.date.year == now.year && e.date.month == now.month)
+        .fold(0, (sum, e) => sum + e.amount);
+  }
+
+  Future<void> _openAdd() async {
+    final result = await Navigator.push<Expense>(
+      context,
+      MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
+    );
+    if (result != null) {
+      setState(() => _expenses.insert(0, result));
+    }
+  }
+
+  void _openDetails(Expense expense) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => ExpenseDetailsScreen(expense: expense)),
+    );
+  }
+
+  void _delete(Expense expense) {
+    final index = _expenses.indexOf(expense);
+    setState(() => _expenses.remove(expense));
+    ScaffoldMessenger.of(context)
+      ..clearSnackBars()
+      ..showSnackBar(
+        SnackBar(
+          content: Text('${expense.title} deleted'),
+          action: SnackBarAction(
+            label: 'Undo',
+            onPressed: () => setState(() => _expenses.insert(index, expense)),
+          ),
+        ),
+      );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final total = _expenses.fold<double>(0, (sum, e) => sum + e.$2);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -26,6 +85,10 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _openAdd,
+        child: const Icon(Icons.add),
+      ),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 600),
@@ -34,23 +97,42 @@ class HomeScreen extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Expanded(child: _SummaryCard(label: 'Total', value: total)),
+                  Expanded(child: _SummaryCard(label: 'Total', value: _total)),
                   const SizedBox(width: 12),
                   Expanded(
-                      child: _SummaryCard(label: 'This month', value: total)),
+                      child: _SummaryCard(
+                          label: 'This month', value: _thisMonth)),
                 ],
               ),
               const SizedBox(height: 24),
               Text('Recent expenses',
                   style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
+              if (_expenses.isEmpty)
+                const Padding(
+                  padding: EdgeInsets.all(32),
+                  child: Center(child: Text('No expenses yet. Tap + to add.')),
+                ),
               for (final e in _expenses)
-                Card(
-                  child: ListTile(
-                    leading: CircleAvatar(child: Icon(e.$3)),
-                    title: Text(e.$1),
-                    trailing: Text('\$${e.$2.toStringAsFixed(2)}',
-                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                Dismissible(
+                  key: ObjectKey(e),
+                  direction: DismissDirection.endToStart,
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 24),
+                    color: Colors.red,
+                    child: const Icon(Icons.delete, color: Colors.white),
+                  ),
+                  onDismissed: (_) => _delete(e),
+                  child: Card(
+                    child: ListTile(
+                      leading: CircleAvatar(child: Icon(e.icon)),
+                      title: Text(e.title),
+                      subtitle: Text('${e.category} • ${e.dateLabel}'),
+                      trailing: Text('\$${e.amount.toStringAsFixed(2)}',
+                          style: const TextStyle(fontWeight: FontWeight.bold)),
+                      onTap: () => _openDetails(e),
+                    ),
                   ),
                 ),
             ],
