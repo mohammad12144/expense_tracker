@@ -15,6 +15,20 @@ class Expense {
 
   static const categories = ['Food', 'Transport', 'Bills', 'Shopping', 'Other'];
 
+  factory Expense.fromJson(Map<String, dynamic> json) => Expense(
+        title: json['title'] as String,
+        amount: (json['amount'] as num).toDouble(),
+        date: DateTime.parse(json['date'] as String),
+        category: json['category'] as String,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'title': title,
+        'amount': amount,
+        'date': date.toIso8601String(),
+        'category': category,
+      };
+
   IconData get icon => switch (category) {
         'Food' => Icons.restaurant,
         'Transport' => Icons.directions_car,
