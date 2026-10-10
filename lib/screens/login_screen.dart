@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/constants.dart';
+import '../utils/validators.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/loading_button.dart';
@@ -26,7 +28,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2)); // محاكاة طلب للسيرفر
     if (!mounted) return;
     setState(() => _isLoading = false);
     Navigator.pushReplacementNamed(context, '/home');
@@ -38,13 +40,13 @@ class _LoginScreenState extends State<LoginScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSizes.pagePadding),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-                           child: Form(
+              constraints:
+                  const BoxConstraints(maxWidth: AppSizes.formMaxWidth),
+              child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
-                
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -62,15 +64,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.email_outlined,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Email is required';
-                        }
-                        if (!value.contains('@') || !value.contains('.')) {
-                          return 'Enter a valid email';
-                        }
-                        return null;
-                      },
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -78,15 +72,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.lock_outline,
                       controller: _passwordController,
                       isPassword: true,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Password is required';
-                        }
-                        if (value.length < 6) {
-                          return 'At least 6 characters';
-                        }
-                        return null;
-                      },
+                      validator: Validators.password,
                     ),
                     const SizedBox(height: 24),
                     LoadingButton(

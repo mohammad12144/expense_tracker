@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/expense.dart';
+import '../utils/constants.dart';
+import '../utils/formatters.dart';
+import '../utils/validators.dart';
 import '../widgets/custom_text_field.dart';
+import '../widgets/loading_button.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});
@@ -60,9 +64,10 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSizes.pagePadding),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints:
+                  const BoxConstraints(maxWidth: AppSizes.formMaxWidth),
               child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -74,9 +79,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       label: 'Title',
                       icon: Icons.edit_outlined,
                       controller: _titleController,
-                      validator: (v) => (v == null || v.trim().isEmpty)
-                          ? 'Title is required'
-                          : null,
+                      validator: (v) =>
+                          Validators.required(v, message: 'Title is required'),
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -85,17 +89,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       controller: _amountController,
                       keyboardType:
                           const TextInputType.numberWithOptions(decimal: true),
-                      validator: (v) {
-                        final amount = double.tryParse(v ?? '');
-                        if (amount == null) return 'Enter a valid number';
-                        if (amount <= 0) return 'Must be greater than 0';
-                        return null;
-                      },
+                      validator: Validators.amount,
                     ),
                     const SizedBox(height: 16),
                     InkWell(
                       onTap: _pickDate,
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(AppSizes.radius),
                       child: InputDecorator(
                         decoration: InputDecoration(
                           labelText: 'Date',
@@ -103,10 +102,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           errorText: _dateError ? 'Pick a date' : null,
                         ),
                         child: Text(
-                          _date == null
-                              ? 'Select date'
-                              : '${_date!.year}-${_date!.month.toString().padLeft(2, '0')}-${_date!.day.toString().padLeft(2, '0')}',
-                        ),
+                            _date == null ? 'Select date' : formatDate(_date!)),
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -124,13 +120,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       validator: (v) => v == null ? 'Choose a category' : null,
                     ),
                     const SizedBox(height: 24),
-                    FilledButton(
-                      onPressed: _save,
-                      child: const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 14),
-                        child: Text('Save'),
-                      ),
-                    ),
+                    LoadingButton(label: 'Save', onPressed: _save),
                   ],
                 ),
               ),

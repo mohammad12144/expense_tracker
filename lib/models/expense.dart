@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../utils/formatters.dart';
 
 class Expense {
   final String title;
@@ -37,8 +38,5 @@ class Expense {
         _ => Icons.category,
       };
 
-  String get dateLabel {
-    String two(int n) => n.toString().padLeft(2, '0');
-    return '${date.year}-${two(date.month)}-${two(date.day)}';
-  }
+  String get dateLabel => formatDate(date);
 }

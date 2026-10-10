@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../models/expense.dart';
 import '../services/expense_storage.dart';
+import '../utils/constants.dart';
+import '../widgets/category_filter.dart';
+import '../widgets/expense_tile.dart';
+import '../widgets/summary_card.dart';
 import 'add_expense_screen.dart';
 import 'expense_details_screen.dart';
 
@@ -34,23 +38,28 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  List<Expense> _sampleExpenses() => [
-        Expense(
-            title: 'Groceries',
-            amount: 45.50,
-            date: DateTime.now().subtract(const Duration(days: 1)),
-            category: 'Food'),
-        Expense(
-            title: 'Fuel',
-            amount: 30.00,
-            date: DateTime.now().subtract(const Duration(days: 2)),
-            category: 'Transport'),
-        Expense(
-            title: 'Internet bill',
-            amount: 25.00,
-            date: DateTime.now().subtract(const Duration(days: 3)),
-            category: 'Bills'),
-      ];
+  List<Expense> _sampleExpenses() {
+    final now = DateTime.now();
+    return [
+      Expense(
+          title: 'Groceries',
+          amount: 45.50,
+          date: now.subtract(const Duration(days: 1)),
+          category: 'Food'),
+      Expense(
+          title: 'Fuel',
+          amount: 30.00,
+          date: now.subtract(const Duration(days: 2)),
+          category: 'Transport'),
+      Expense(
+          title: 'Internet bill',
+          amount: 25.00,
+          date: now.subtract(const Duration(days: 3)),
+          category: 'Bills'),
+    ];
+  }
+
+  // ---------- بيانات محسوبة ----------
 
   List<Expense> get _visible => _expenses.where((e) {
         final matchCategory = _category == null || e.category == _category;
@@ -67,6 +76,8 @@ class _HomeScreenState extends State<HomeScreen> {
         .where((e) => e.date.year == now.year && e.date.month == now.month)
         .fold(0, (sum, e) => sum + e.amount);
   }
+
+  // ---------- أفعال ----------
 
   Future<void> _openAdd() async {
     final result = await Navigator.push<Expense>(
@@ -107,6 +118,8 @@ class _HomeScreenState extends State<HomeScreen> {
       );
   }
 
+  // ---------- واجهة ----------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,6 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Home'),
         actions: [
           IconButton(
+            tooltip: 'Logout',
             icon: const Icon(Icons.logout),
             onPressed: () => Navigator.pushNamedAndRemoveUntil(
                 context, '/login', (route) => false),
@@ -121,12 +135,14 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
+        tooltip: 'Add expense',
         onPressed: _openAdd,
         child: const Icon(Icons.add),
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 600),
+          constraints:
+              const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
           child: _isLoading
               ? const Center(child: CircularProgressIndicator())
               : _buildContent(),
@@ -138,16 +154,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildContent() {
     final items = _visible;
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(AppSizes.listPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(child: _SummaryCard(label: 'Total', value: _total)),
+              Expanded(child: SummaryCard(label: 'Total', value: _total)),
               const SizedBox(width: 12),
               Expanded(
-                  child: _SummaryCard(label: 'This month', value: _thisMonth)),
+                  child: SummaryCard(label: 'This month', value: _thisMonth)),
             ],
           ),
           const SizedBox(height: 16),
@@ -159,29 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
             onChanged: (v) => setState(() => _query = v),
           ),
           const SizedBox(height: 12),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: ChoiceChip(
-                    label: const Text('All'),
-                    selected: _category == null,
-                    onSelected: (_) => setState(() => _category = null),
-                  ),
-                ),
-                for (final c in Expense.categories)
-                  Padding(
-                    padding: const EdgeInsets.only(right: 8),
-                    child: ChoiceChip(
-                      label: Text(c),
-                      selected: _category == c,
-                      onSelected: (_) => setState(() => _category = c),
-                    ),
-                  ),
-              ],
-            ),
+          CategoryFilter(
+            selected: _category,
+            onChanged: (c) => setState(() => _category = c),
           ),
           Row(
             children: [
@@ -212,30 +208,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildList(List<Expense> items) {
     return ListView.builder(
       itemCount: items.length,
-      itemBuilder: (context, i) {
-        final e = items[i];
-        return Dismissible(
-          key: ObjectKey(e),
-          direction: DismissDirection.endToStart,
-          background: Container(
-            alignment: Alignment.centerRight,
-            padding: const EdgeInsets.only(right: 24),
-            color: Colors.red,
-            child: const Icon(Icons.delete, color: Colors.white),
-          ),
-          onDismissed: (_) => _delete(e),
-          child: Card(
-            child: ListTile(
-              leading: CircleAvatar(child: Icon(e.icon)),
-              title: Text(e.title),
-              subtitle: Text('${e.category} • ${e.dateLabel}'),
-              trailing: Text('\$${e.amount.toStringAsFixed(2)}',
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
-              onTap: () => _openDetails(e),
-            ),
-          ),
-        );
-      },
+      itemBuilder: (context, i) => ExpenseTile(
+        expense: items[i],
+        onTap: () => _openDetails(items[i]),
+        onDelete: () => _delete(items[i]),
+      ),
     );
   }
 
@@ -248,54 +225,9 @@ class _HomeScreenState extends State<HomeScreen> {
         childAspectRatio: 1.1,
       ),
       itemCount: items.length,
-      itemBuilder: (context, i) {
-        final e = items[i];
-        return Card(
-          child: InkWell(
-            borderRadius: BorderRadius.circular(16),
-            onTap: () => _openDetails(e),
-            child: Padding(
-              padding: const EdgeInsets.all(12),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircleAvatar(child: Icon(e.icon)),
-                  const SizedBox(height: 8),
-                  Text(e.title,
-                      maxLines: 1, overflow: TextOverflow.ellipsis),
-                  const SizedBox(height: 4),
-                  Text('\$${e.amount.toStringAsFixed(2)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold)),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _SummaryCard extends StatelessWidget {
-  final String label;
-  final double value;
-
-  const _SummaryCard({required this.label, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: Theme.of(context).textTheme.labelLarge),
-            const SizedBox(height: 8),
-            Text('\$${value.toStringAsFixed(2)}',
-                style: Theme.of(context).textTheme.headlineSmall),
-          ],
-        ),
+      itemBuilder: (context, i) => ExpenseGridTile(
+        expense: items[i],
+        onTap: () => _openDetails(items[i]),
       ),
     );
   }

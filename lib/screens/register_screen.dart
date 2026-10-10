@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../utils/constants.dart';
+import '../utils/validators.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/loading_button.dart';
@@ -30,7 +32,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed(const Duration(seconds: 2)); // محاكاة طلب للسيرفر
     if (!mounted) return;
     setState(() => _isLoading = false);
     Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
@@ -43,11 +45,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
+            padding: const EdgeInsets.all(AppSizes.pagePadding),
             child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
+              constraints:
+                  const BoxConstraints(maxWidth: AppSizes.formMaxWidth),
               child: Form(
                 key: _formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -58,10 +62,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       label: 'Full name',
                       icon: Icons.person_outline,
                       controller: _nameController,
-                      validator: (value) =>
-                          (value == null || value.trim().length < 2)
-                              ? 'Enter your name'
-                              : null,
+                      validator: Validators.name,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -69,15 +70,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       icon: Icons.email_outlined,
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Email is required';
-                        }
-                        if (!value.contains('@') || !value.contains('.')) {
-                          return 'Enter a valid email';
-                        }
-                        return null;
-                      },
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -85,10 +78,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       icon: Icons.lock_outline,
                       controller: _passwordController,
                       isPassword: true,
-                      validator: (value) =>
-                          (value == null || value.length < 6)
-                              ? 'At least 6 characters'
-                              : null,
+                      validator: Validators.password,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -96,9 +86,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       icon: Icons.lock_outline,
                       controller: _confirmController,
                       isPassword: true,
-                      validator: (value) => value != _passwordController.text
-                          ? 'Passwords do not match'
-                          : null,
+                      validator:
+                          Validators.matches(() => _passwordController.text),
                     ),
                     const SizedBox(height: 24),
                     LoadingButton(
