@@ -7,6 +7,7 @@ import '../widgets/expense_tile.dart';
 import '../widgets/summary_card.dart';
 import 'add_expense_screen.dart';
 import 'expense_details_screen.dart';
+import 'products_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -59,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
-  // ---------- بيانات محسوبة ----------
+
 
   List<Expense> get _visible => _expenses.where((e) {
         final matchCategory = _category == null || e.category == _category;
@@ -77,7 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .fold(0, (sum, e) => sum + e.amount);
   }
 
-  // ---------- أفعال ----------
+  
 
   Future<void> _openAdd() async {
     final result = await Navigator.push<Expense>(
@@ -118,7 +119,7 @@ class _HomeScreenState extends State<HomeScreen> {
       );
   }
 
-  // ---------- واجهة ----------
+ 
 
   @override
   Widget build(BuildContext context) {
@@ -126,11 +127,13 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
-          IconButton(
-            tooltip: 'Logout',
-            icon: const Icon(Icons.logout),
-            onPressed: () => Navigator.pushNamedAndRemoveUntil(
-                context, '/login', (route) => false),
+                    IconButton(
+            tooltip: 'Products (API demo)',
+            icon: const Icon(Icons.storefront_outlined),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProductsScreen()),
+            ),
           ),
         ],
       ),
