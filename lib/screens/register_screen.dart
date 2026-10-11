@@ -35,7 +35,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
     await Future.delayed(const Duration(seconds: 2)); // محاكاة طلب للسيرفر
     if (!mounted) return;
     setState(() => _isLoading = false);
-    Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+
+    // DummyJSON ما فيه تسجيل حساب حقيقي، فنرجع لشاشة Login مع تنبيه
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+          content: Text('Demo only: log in with emilys / emilyspass')),
+    );
+    Navigator.pop(context);
   }
 
   @override

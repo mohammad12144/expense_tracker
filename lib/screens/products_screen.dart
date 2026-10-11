@@ -101,8 +101,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: Image.network(
                   p.thumbnail,
                   fit: BoxFit.cover,
-                  errorBuilder: (_, __, ___) =>
-                      const Icon(Icons.image_not_supported),
+                errorBuilder: (_, _, _) => const Icon(Icons.image_not_supported),
                 ),
               ),
               title: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis),

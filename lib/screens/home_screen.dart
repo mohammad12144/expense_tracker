@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/expense.dart';
+import '../services/app_services.dart';
 import '../services/expense_storage.dart';
 import '../utils/constants.dart';
 import '../widgets/category_filter.dart';
@@ -8,6 +9,7 @@ import '../widgets/summary_card.dart';
 import 'add_expense_screen.dart';
 import 'expense_details_screen.dart';
 import 'products_screen.dart';
+import 'profile_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -60,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
   }
 
-
+  // ---------- بيانات محسوبة ----------
 
   List<Expense> get _visible => _expenses.where((e) {
         final matchCategory = _category == null || e.category == _category;
@@ -78,7 +80,7 @@ class _HomeScreenState extends State<HomeScreen> {
         .fold(0, (sum, e) => sum + e.amount);
   }
 
-  
+  // ---------- أفعال ----------
 
   Future<void> _openAdd() async {
     final result = await Navigator.push<Expense>(
@@ -119,7 +121,13 @@ class _HomeScreenState extends State<HomeScreen> {
       );
   }
 
- 
+  Future<void> _logout() async {
+    await authService.logout();
+    if (!mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
+  }
+
+  // ---------- واجهة ----------
 
   @override
   Widget build(BuildContext context) {
@@ -127,13 +135,26 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('Home'),
         actions: [
-                    IconButton(
+          IconButton(
             tooltip: 'Products (API demo)',
             icon: const Icon(Icons.storefront_outlined),
             onPressed: () => Navigator.push(
               context,
               MaterialPageRoute(builder: (_) => const ProductsScreen()),
             ),
+          ),
+          IconButton(
+            tooltip: 'Profile',
+            icon: const Icon(Icons.person_outline),
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Logout',
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
           ),
         ],
       ),

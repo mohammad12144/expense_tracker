@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../services/api_client.dart';
+import '../services/app_services.dart';
 import '../utils/constants.dart';
 import '../utils/validators.dart';
 import '../widgets/app_logo.dart';
@@ -14,28 +16,42 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
+  final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  String? _error;
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _usernameController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2)); // محاكاة طلب للسيرفر
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-    Navigator.pushReplacementNamed(context, '/home');
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      await authService.login(
+        username: _usernameController.text.trim(),
+        password: _passwordController.text,
+      );
+      if (!mounted) return;
+      Navigator.pushReplacementNamed(context, '/home');
+    } on ApiException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = e.message);
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -60,11 +76,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     CustomTextField(
-                      label: 'Email',
-                      icon: Icons.email_outlined,
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      validator: Validators.email,
+                      label: 'Username',
+                      icon: Icons.person_outline,
+                      controller: _usernameController,
+                      validator: (v) => Validators.required(v,
+                          message: 'Username is required'),
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -72,8 +88,17 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.lock_outline,
                       controller: _passwordController,
                       isPassword: true,
-                      validator: Validators.password,
+                      validator: (v) => Validators.required(v,
+                          message: 'Password is required'),
                     ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 16),
+                      Text(
+                        _error!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(color: colors.error),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     LoadingButton(
                       label: 'Login',
@@ -84,6 +109,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () =>
                           Navigator.pushNamed(context, '/register'),
                       child: const Text('Create account'),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      'Demo account: emilys / emilyspass',
+                      textAlign: TextAlign.center,
+                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
