@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/expense.dart';
+import '../providers/expenses_provider.dart';
+import '../providers/filters_provider.dart';
 import '../services/app_services.dart';
-import '../services/expense_storage.dart';
 import '../utils/constants.dart';
 import '../widgets/category_filter.dart';
 import '../widgets/expense_tile.dart';
@@ -11,74 +13,16 @@ import 'expense_details_screen.dart';
 import 'products_screen.dart';
 import 'profile_screen.dart';
 
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
-  final _storage = ExpenseStorage();
-  List<Expense> _expenses = [];
-  bool _isLoading = true;
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  // حالة واجهة مؤقتة بتخص هالشاشة بس، فبتضل setState
   bool _isGrid = false;
-  String? _category; // null = All
-  String _query = '';
-
-  @override
-  void initState() {
-    super.initState();
-    _load();
-  }
-
-  Future<void> _load() async {
-    final saved = await _storage.load();
-    if (!mounted) return;
-    setState(() {
-      _expenses = saved ?? _sampleExpenses();
-      _isLoading = false;
-    });
-  }
-
-  List<Expense> _sampleExpenses() {
-    final now = DateTime.now();
-    return [
-      Expense(
-          title: 'Groceries',
-          amount: 45.50,
-          date: now.subtract(const Duration(days: 1)),
-          category: 'Food'),
-      Expense(
-          title: 'Fuel',
-          amount: 30.00,
-          date: now.subtract(const Duration(days: 2)),
-          category: 'Transport'),
-      Expense(
-          title: 'Internet bill',
-          amount: 25.00,
-          date: now.subtract(const Duration(days: 3)),
-          category: 'Bills'),
-    ];
-  }
-
-  // ---------- بيانات محسوبة ----------
-
-  List<Expense> get _visible => _expenses.where((e) {
-        final matchCategory = _category == null || e.category == _category;
-        final matchQuery =
-            e.title.toLowerCase().contains(_query.trim().toLowerCase());
-        return matchCategory && matchQuery;
-      }).toList();
-
-  double get _total => _expenses.fold(0, (sum, e) => sum + e.amount);
-
-  double get _thisMonth {
-    final now = DateTime.now();
-    return _expenses
-        .where((e) => e.date.year == now.year && e.date.month == now.month)
-        .fold(0, (sum, e) => sum + e.amount);
-  }
 
   // ---------- أفعال ----------
 
@@ -88,8 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
       MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
     );
     if (result != null) {
-      setState(() => _expenses.insert(0, result));
-      await _storage.save(_expenses);
+      await ref.read(expensesProvider.notifier).add(result);
     }
   }
 
@@ -102,9 +45,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _delete(Expense expense) {
-    final index = _expenses.indexOf(expense);
-    setState(() => _expenses.remove(expense));
-    _storage.save(_expenses);
+    final notifier = ref.read(expensesProvider.notifier);
+    final index = notifier.remove(expense);
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(
@@ -112,10 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
           content: Text('${expense.title} deleted'),
           action: SnackBarAction(
             label: 'Undo',
-            onPressed: () {
-              setState(() => _expenses.insert(index, expense));
-              _storage.save(_expenses);
-            },
+            onPressed: () => notifier.restore(index, expense),
           ),
         ),
       );
@@ -131,6 +70,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final expensesAsync = ref.watch(expensesProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Home'),
@@ -167,16 +108,20 @@ class _HomeScreenState extends State<HomeScreen> {
         child: ConstrainedBox(
           constraints:
               const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
-          child: _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _buildContent(),
+          // ثلاث حالات للـ async: تحميل، خطأ، بيانات
+          child: expensesAsync.when(
+            loading: () => const Center(child: CircularProgressIndicator()),
+            error: (e, _) => Center(child: Text('Failed to load: $e')),
+            data: (expenses) => _buildContent(expenses),
+          ),
         ),
       ),
     );
   }
 
-  Widget _buildContent() {
-    final items = _visible;
+  Widget _buildContent(List<Expense> allExpenses) {
+    final items = ref.watch(visibleExpensesProvider);
+
     return Padding(
       padding: const EdgeInsets.all(AppSizes.listPadding),
       child: Column(
@@ -184,10 +129,15 @@ class _HomeScreenState extends State<HomeScreen> {
         children: [
           Row(
             children: [
-              Expanded(child: SummaryCard(label: 'Total', value: _total)),
+              Expanded(
+                child: SummaryCard(
+                    label: 'Total', value: ref.watch(totalProvider)),
+              ),
               const SizedBox(width: 12),
               Expanded(
-                  child: SummaryCard(label: 'This month', value: _thisMonth)),
+                child: SummaryCard(
+                    label: 'This month', value: ref.watch(thisMonthProvider)),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -196,12 +146,14 @@ class _HomeScreenState extends State<HomeScreen> {
               hintText: 'Search expenses',
               prefixIcon: Icon(Icons.search),
             ),
-            onChanged: (v) => setState(() => _query = v),
+            onChanged: (v) =>
+                ref.read(searchQueryProvider.notifier).setQuery(v),
           ),
           const SizedBox(height: 12),
           CategoryFilter(
-            selected: _category,
-            onChanged: (c) => setState(() => _category = c),
+            selected: ref.watch(categoryFilterProvider),
+            onChanged: (c) =>
+                ref.read(categoryFilterProvider.notifier).select(c),
           ),
           Row(
             children: [
@@ -218,7 +170,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Expanded(
             child: items.isEmpty
                 ? Center(
-                    child: Text(_expenses.isEmpty
+                    child: Text(allExpenses.isEmpty
                         ? 'No expenses yet. Tap + to add.'
                         : 'No results found.'),
                   )
