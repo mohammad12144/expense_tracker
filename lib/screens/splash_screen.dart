@@ -1,15 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../services/app_services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/app_logo.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -17,10 +19,19 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _start() async {
-    final loggedIn = await authService.isLoggedIn;
-    await Future.delayed(const Duration(seconds: 2));
+    final minDelay = Future<void>.delayed(const Duration(seconds: 2));
+    User? user;
+    try {
+      // Firebase بيسترجع الجلسة المحفوظة. إذا علق، بنكمّل بعد 6 ثواني.
+      user = await ref
+          .read(authStateProvider.future)
+          .timeout(const Duration(seconds: 6));
+    } catch (e) {
+      debugPrint('[splash] auth state failed: $e');
+    }
+    await minDelay;
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, loggedIn ? '/home' : '/login');
+    Navigator.pushReplacementNamed(context, user == null ? '/login' : '/home');
   }
 
   @override

@@ -1,24 +1,29 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/auth_provider.dart';
+import '../utils/auth_errors.dart';
 import '../utils/constants.dart';
 import '../utils/validators.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/loading_button.dart';
 
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _isLoading = false;
+  String? _error;
 
   @override
   void dispose() {
@@ -31,17 +36,26 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2)); // محاكاة طلب للسيرفر
-    if (!mounted) return;
-    setState(() => _isLoading = false);
-
-    // DummyJSON ما فيه تسجيل حساب حقيقي، فنرجع لشاشة Login مع تنبيه
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-          content: Text('Demo only: log in with emilys / emilyspass')),
-    );
-    Navigator.pop(context);
+    setState(() {
+      _isLoading = true;
+      _error = null;
+    });
+    try {
+      final cred =
+          await ref.read(firebaseAuthProvider).createUserWithEmailAndPassword(
+                email: _emailController.text.trim(),
+                password: _passwordController.text,
+              );
+      await cred.user?.updateDisplayName(_nameController.text.trim());
+      if (!mounted) return;
+      // Firebase بيسجّل دخول المستخدم الجديد تلقائيًا
+      Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+      setState(() => _error = authErrorMessage(e));
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
   }
 
   @override
@@ -95,6 +109,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       validator:
                           Validators.matches(() => _passwordController.text),
                     ),
+                    if (_error != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        _error!,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
+                      ),
+                    ],
                     const SizedBox(height: 24),
                     LoadingButton(
                       label: 'Register',

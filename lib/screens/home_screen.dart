@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/expense.dart';
+import '../providers/auth_provider.dart';
 import '../providers/expenses_provider.dart';
 import '../providers/filters_provider.dart';
-import '../services/app_services.dart';
 import '../utils/constants.dart';
 import '../widgets/category_filter.dart';
 import '../widgets/expense_tile.dart';
@@ -21,8 +22,19 @@ class HomeScreen extends ConsumerStatefulWidget {
 }
 
 class _HomeScreenState extends ConsumerState<HomeScreen> {
-  // حالة واجهة مؤقتة بتخص هالشاشة بس، فبتضل setState
+  // حالة واجهة مؤقتة بتخص هالشاشة بس
   bool _isGrid = false;
+
+  /// بننفّذ عملية Firestore بدون ما نوقف الواجهة.
+  /// (Firestore بيحدّث القائمة محليًا فورًا حتى لو النت بطيء.)
+  void _fire(Future<void> Function() action) {
+    unawaited(action().catchError((Object e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context)
+        ..clearSnackBars()
+        ..showSnackBar(SnackBar(content: Text('Failed: $e')));
+    }));
+  }
 
   // ---------- أفعال ----------
 
@@ -31,8 +43,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context,
       MaterialPageRoute(builder: (_) => const AddExpenseScreen()),
     );
-    if (result != null) {
-      await ref.read(expensesProvider.notifier).add(result);
+    final repo = ref.read(expenseRepositoryProvider);
+    if (result != null && repo != null) {
+      _fire(() => repo.add(result));
     }
   }
 
@@ -45,8 +58,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   void _delete(Expense expense) {
-    final notifier = ref.read(expensesProvider.notifier);
-    final index = notifier.remove(expense);
+    final repo = ref.read(expenseRepositoryProvider);
+    if (repo == null) return;
+    _fire(() => repo.remove(expense));
     ScaffoldMessenger.of(context)
       ..clearSnackBars()
       ..showSnackBar(
@@ -54,14 +68,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           content: Text('${expense.title} deleted'),
           action: SnackBarAction(
             label: 'Undo',
-            onPressed: () => notifier.restore(index, expense),
+            onPressed: () => _fire(() => repo.restore(expense)),
           ),
         ),
       );
   }
 
   Future<void> _logout() async {
-    await authService.logout();
+    await ref.read(firebaseAuthProvider).signOut();
     if (!mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, '/login', (route) => false);
   }
@@ -108,7 +122,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         child: ConstrainedBox(
           constraints:
               const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
-          // ثلاث حالات للـ async: تحميل، خطأ، بيانات
           child: expensesAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text('Failed to load: $e')),

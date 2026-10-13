@@ -1,13 +1,18 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'firebase_options.dart';
 import 'screens/splash_screen.dart';
 import 'screens/login_screen.dart';
 import 'screens/register_screen.dart';
 import 'screens/home_screen.dart';
 import 'services/app_services.dart';
 
-// ProviderScope هو اللي بيخزّن كل الـ providers، ولازم يكون بأعلى التطبيق
-void main() => runApp(const ProviderScope(child: MyApp()));
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  runApp(const ProviderScope(child: MyApp()));
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

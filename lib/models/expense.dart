@@ -2,12 +2,15 @@ import 'package:flutter/material.dart';
 import '../utils/formatters.dart';
 
 class Expense {
+  /// id الوثيقة بـ Firestore (null للمصروف الجديد قبل ما ينحفظ)
+  final String? id;
   final String title;
   final double amount;
   final DateTime date;
   final String category;
 
   const Expense({
+    this.id,
     required this.title,
     required this.amount,
     required this.date,

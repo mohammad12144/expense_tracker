@@ -5,7 +5,7 @@ import 'token_storage.dart';
 class AuthService {
   static const _base = 'https://dummyjson.com/auth';
 
-  
+  /// قصيرة عمدًا لتشوف الـ refresh بعينك. بالمشاريع الحقيقية 15 إلى 30 دقيقة.
   static const accessTokenMinutes = 1;
 
   final ApiClient _api;
@@ -13,6 +13,7 @@ class AuthService {
 
   AuthService({required this._api, required this.storage});
 
+  /// فيه جلسة محفوظة؟ (وجود refresh token)
   Future<bool> get isLoggedIn async => (await storage.refreshToken) != null;
 
   Future<AuthUser> login({

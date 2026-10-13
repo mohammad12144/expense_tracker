@@ -1,29 +1,31 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../services/api_client.dart';
-import '../services/app_services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/auth_provider.dart';
+import '../utils/auth_errors.dart';
 import '../utils/constants.dart';
 import '../utils/validators.dart';
 import '../widgets/app_logo.dart';
 import '../widgets/custom_text_field.dart';
 import '../widgets/loading_button.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
   String? _error;
 
   @override
   void dispose() {
-    _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -35,15 +37,15 @@ class _LoginScreenState extends State<LoginScreen> {
       _error = null;
     });
     try {
-      await authService.login(
-        username: _usernameController.text.trim(),
-        password: _passwordController.text,
-      );
+      await ref.read(firebaseAuthProvider).signInWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/home');
-    } on ApiException catch (e) {
+    } on FirebaseAuthException catch (e) {
       if (!mounted) return;
-      setState(() => _error = e.message);
+      setState(() => _error = authErrorMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -51,7 +53,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -76,11 +77,11 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     const SizedBox(height: 24),
                     CustomTextField(
-                      label: 'Username',
-                      icon: Icons.person_outline,
-                      controller: _usernameController,
-                      validator: (v) => Validators.required(v,
-                          message: 'Username is required'),
+                      label: 'Email',
+                      icon: Icons.email_outlined,
+                      controller: _emailController,
+                      keyboardType: TextInputType.emailAddress,
+                      validator: Validators.email,
                     ),
                     const SizedBox(height: 16),
                     CustomTextField(
@@ -88,15 +89,15 @@ class _LoginScreenState extends State<LoginScreen> {
                       icon: Icons.lock_outline,
                       controller: _passwordController,
                       isPassword: true,
-                      validator: (v) => Validators.required(v,
-                          message: 'Password is required'),
+                      validator: Validators.password,
                     ),
                     if (_error != null) ...[
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 12),
                       Text(
                         _error!,
                         textAlign: TextAlign.center,
-                        style: TextStyle(color: colors.error),
+                        style: TextStyle(
+                            color: Theme.of(context).colorScheme.error),
                       ),
                     ],
                     const SizedBox(height: 24),
@@ -109,12 +110,6 @@ class _LoginScreenState extends State<LoginScreen> {
                       onPressed: () =>
                           Navigator.pushNamed(context, '/register'),
                       child: const Text('Create account'),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Demo account: emilys / emilyspass',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                 ),
