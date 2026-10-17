@@ -5,6 +5,7 @@ import '../models/expense.dart';
 import '../providers/auth_provider.dart';
 import '../providers/expenses_provider.dart';
 import '../providers/filters_provider.dart';
+import '../providers/push_provider.dart';
 import '../utils/constants.dart';
 import '../widgets/category_filter.dart';
 import '../widgets/expense_tile.dart';
@@ -25,8 +26,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   // حالة واجهة مؤقتة بتخص هالشاشة بس
   bool _isGrid = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // إذا إذن الإشعارات معطى من قبل، بنفعّل الاستقبال (microtask عشان ما نعدّل state أثناء البناء)
+    Future.microtask(() => ref.read(pushControllerProvider.notifier).init());
+  }
+
   /// بننفّذ عملية Firestore بدون ما نوقف الواجهة.
-  /// (Firestore بيحدّث القائمة محليًا فورًا حتى لو النت بطيء.)
   void _fire(Future<void> Function() action) {
     unawaited(action().catchError((Object e) {
       if (!mounted) return;

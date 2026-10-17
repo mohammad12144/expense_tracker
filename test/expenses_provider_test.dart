@@ -14,6 +14,8 @@ ProviderContainer makeContainer(List<Expense> data) {
     ],
   );
   addTearDown(container.dispose);
+  // Riverpod 3: بدون مستمع الـ provider بيتوقف، فبنخلي مستمع شغّال طول الاختبار
+  container.listen(expensesProvider, (_, _) {});
   return container;
 }
 
