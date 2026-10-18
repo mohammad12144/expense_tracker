@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart'
+    show FirebaseFirestore, Settings;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +14,14 @@ import 'package:expense_tracker/services/app_services.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Offline cache: keeps expenses on the device (on by default on mobile,
+  // must be enabled on web). The cache is capped at 100 MB.
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+    cacheSizeBytes: 100 * 1024 * 1024,
+  );
+
   runApp(const ProviderScope(child: MyApp()));
 }
 

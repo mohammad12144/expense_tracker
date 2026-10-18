@@ -1,16 +1,21 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:expense_tracker/features/expenses/domain/expense.dart';
+import 'package:expense_tracker/features/expenses/domain/sync_state.dart';
 
-/// واجهة التخزين. الشاشات والـ providers بتتعامل معها بس،
-/// فلو بدّلنا Firestore بـ Supabase لاحقًا ما بنغيّر غير هالملف.
+/// Storage interface. Screens and providers only talk to this,
+/// so replacing Firestore with Supabase later only touches this file.
 abstract class ExpenseRepository {
   Stream<List<Expense>> watch();
+
+  /// Emits whether the data is cached/offline and whether writes are pending.
+  Stream<SyncState> watchSync();
+
   Future<void> add(Expense expense);
   Future<void> remove(Expense expense);
   Future<void> restore(Expense expense);
 }
 
-/// المصاريف مخزّنة بـ: users/{uid}/expenses/{id}
+/// Expenses are stored at: users/{uid}/expenses/{id}
 class FirestoreExpenseRepository implements ExpenseRepository {
   FirestoreExpenseRepository(this._db, this._uid);
 
@@ -20,11 +25,21 @@ class FirestoreExpenseRepository implements ExpenseRepository {
   CollectionReference<Map<String, dynamic>> get _col =>
       _db.collection('users').doc(_uid).collection('expenses');
 
+  Query<Map<String, dynamic>> get _query =>
+      _col.orderBy('date', descending: true);
+
   @override
-  Stream<List<Expense>> watch() => _col
-      .orderBy('date', descending: true)
-      .snapshots()
-      .map((snap) => snap.docs.map(_fromDoc).toList());
+  Stream<List<Expense>> watch() =>
+      _query.snapshots().map((snap) => snap.docs.map(_fromDoc).toList());
+
+  @override
+  Stream<SyncState> watchSync() => _query
+      .snapshots(includeMetadataChanges: true)
+      .map((snap) => SyncState(
+            isFromCache: snap.metadata.isFromCache,
+            hasPendingWrites: snap.metadata.hasPendingWrites,
+          ))
+      .distinct();
 
   @override
   Future<void> add(Expense expense) async {
@@ -38,7 +53,7 @@ class FirestoreExpenseRepository implements ExpenseRepository {
     await _col.doc(id).delete();
   }
 
-  /// للـ Undo: بنرجّع نفس الوثيقة بنفس الـ id
+  /// For Undo: put the same document back with the same id.
   @override
   Future<void> restore(Expense expense) async {
     final id = expense.id;
