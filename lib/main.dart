@@ -2,12 +2,12 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
-import 'screens/splash_screen.dart';
-import 'screens/login_screen.dart';
-import 'screens/register_screen.dart';
-import 'screens/home_screen.dart';
-import 'screens/notification_target_screen.dart';
-import 'services/app_services.dart';
+import 'package:expense_tracker/features/auth/presentation/screens/splash_screen.dart';
+import 'package:expense_tracker/features/auth/presentation/screens/login_screen.dart';
+import 'package:expense_tracker/features/auth/presentation/screens/register_screen.dart';
+import 'package:expense_tracker/features/expenses/presentation/screens/home_screen.dart';
+import 'package:expense_tracker/features/notifications/presentation/screens/notification_target_screen.dart';
+import 'package:expense_tracker/services/app_services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

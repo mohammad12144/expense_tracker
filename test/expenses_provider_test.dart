@@ -1,6 +1,6 @@
-import 'package:expense_tracker/models/expense.dart';
-import 'package:expense_tracker/providers/expenses_provider.dart';
-import 'package:expense_tracker/providers/filters_provider.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
+import 'package:expense_tracker/features/expenses/presentation/providers/expenses_provider.dart';
+import 'package:expense_tracker/features/expenses/presentation/providers/filters_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

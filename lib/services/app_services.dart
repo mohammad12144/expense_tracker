@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'api_client.dart';
-import 'auth_service.dart';
-import 'authenticated_client.dart';
-import 'token_storage.dart';
+import 'package:expense_tracker/services/api_client.dart';
+import 'package:expense_tracker/services/auth_service.dart';
+import 'package:expense_tracker/services/authenticated_client.dart';
+import 'package:expense_tracker/services/token_storage.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 final messengerKey = GlobalKey<ScaffoldMessengerState>();

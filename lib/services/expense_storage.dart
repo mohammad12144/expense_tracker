@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/expense.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
 
 class ExpenseStorage {
   static const _key = 'expenses';

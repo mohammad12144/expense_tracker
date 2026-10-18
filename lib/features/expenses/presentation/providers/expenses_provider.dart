@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart' show FirebaseFirestore;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/expense.dart';
-import '../repositories/expense_repository.dart';
-import 'auth_provider.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
+import 'package:expense_tracker/features/expenses/data/expense_repository.dart';
+import 'package:expense_tracker/features/auth/presentation/providers/auth_provider.dart';
 
 final firestoreProvider =
     Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);

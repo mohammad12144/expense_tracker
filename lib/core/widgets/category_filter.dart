@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/expense.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
 
 class CategoryFilter extends StatelessWidget {
   final String? selected;

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import '../models/expense.dart';
-import '../utils/constants.dart';
-import '../utils/formatters.dart';
-import '../utils/validators.dart';
-import '../widgets/custom_text_field.dart';
-import '../widgets/loading_button.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
+import 'package:expense_tracker/core/utils/constants.dart';
+import 'package:expense_tracker/core/utils/formatters.dart';
+import 'package:expense_tracker/core/utils/validators.dart';
+import 'package:expense_tracker/core/widgets/custom_text_field.dart';
+import 'package:expense_tracker/core/widgets/loading_button.dart';
 
 class AddExpenseScreen extends StatefulWidget {
   const AddExpenseScreen({super.key});

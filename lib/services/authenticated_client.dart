@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'api_client.dart';
-import 'token_storage.dart';
+import 'package:expense_tracker/services/api_client.dart';
+import 'package:expense_tracker/services/token_storage.dart';
 
 class AuthenticatedClient {
   final ApiClient _api;

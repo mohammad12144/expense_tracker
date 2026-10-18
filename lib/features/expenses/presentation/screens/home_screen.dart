@@ -1,19 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/expense.dart';
-import '../providers/auth_provider.dart';
-import '../providers/expenses_provider.dart';
-import '../providers/filters_provider.dart';
-import '../providers/push_provider.dart';
-import '../utils/constants.dart';
-import '../widgets/category_filter.dart';
-import '../widgets/expense_tile.dart';
-import '../widgets/summary_card.dart';
-import 'add_expense_screen.dart';
-import 'expense_details_screen.dart';
-import 'products_screen.dart';
-import 'profile_screen.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
+import 'package:expense_tracker/features/auth/presentation/providers/auth_provider.dart';
+import 'package:expense_tracker/features/expenses/presentation/providers/expenses_provider.dart';
+import 'package:expense_tracker/features/expenses/presentation/providers/filters_provider.dart';
+import 'package:expense_tracker/features/notifications/presentation/providers/push_provider.dart';
+import 'package:expense_tracker/core/utils/constants.dart';
+import 'package:expense_tracker/core/widgets/category_filter.dart';
+import 'package:expense_tracker/core/widgets/expense_tile.dart';
+import 'package:expense_tracker/core/widgets/summary_card.dart';
+import 'package:expense_tracker/features/expenses/presentation/screens/add_expense_screen.dart';
+import 'package:expense_tracker/features/expenses/presentation/screens/expense_details_screen.dart';
+import 'package:expense_tracker/screens/products_screen.dart';
+import 'package:expense_tracker/core/screens/profile_screen.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});

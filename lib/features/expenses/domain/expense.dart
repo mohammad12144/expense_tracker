@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/formatters.dart';
+import 'package:expense_tracker/core/utils/formatters.dart';
 
 class Expense {
   /// id الوثيقة بـ Firestore (null للمصروف الجديد قبل ما ينحفظ)

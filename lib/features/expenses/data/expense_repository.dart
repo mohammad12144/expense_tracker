@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../models/expense.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
 
 /// واجهة التخزين. الشاشات والـ providers بتتعامل معها بس،
 /// فلو بدّلنا Firestore بـ Supabase لاحقًا ما بنغيّر غير هالملف.

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../models/expense.dart';
-import '../services/api_client.dart';
-import '../utils/formatters.dart';
-import '../widgets/loading_button.dart';
+import 'package:expense_tracker/features/expenses/domain/expense.dart';
+import 'package:expense_tracker/services/api_client.dart';
+import 'package:expense_tracker/core/utils/formatters.dart';
+import 'package:expense_tracker/core/widgets/loading_button.dart';
 
 class ExpenseDetailsScreen extends StatefulWidget {
   final Expense expense;

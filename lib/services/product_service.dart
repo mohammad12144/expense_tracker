@@ -1,5 +1,5 @@
-import '../models/product.dart';
-import 'api_client.dart';
+import 'package:expense_tracker/models/product.dart';
+import 'package:expense_tracker/services/api_client.dart';
 
 class ProductService {
   final ApiClient _api;

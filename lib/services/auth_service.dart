@@ -1,6 +1,6 @@
-import '../models/auth_user.dart';
-import 'api_client.dart';
-import 'token_storage.dart';
+import 'package:expense_tracker/features/auth/domain/auth_user.dart';
+import 'package:expense_tracker/services/api_client.dart';
+import 'package:expense_tracker/services/token_storage.dart';
 
 class AuthService {
   static const _base = 'https://dummyjson.com/auth';

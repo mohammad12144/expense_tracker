@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../models/product.dart';
-import '../services/api_client.dart';
-import '../services/product_service.dart';
-import '../utils/constants.dart';
-import '../utils/formatters.dart';
+import 'package:expense_tracker/models/product.dart';
+import 'package:expense_tracker/services/api_client.dart';
+import 'package:expense_tracker/services/product_service.dart';
+import 'package:expense_tracker/core/utils/constants.dart';
+import 'package:expense_tracker/core/utils/formatters.dart';
 
 class ProductsScreen extends StatefulWidget {
   const ProductsScreen({super.key});

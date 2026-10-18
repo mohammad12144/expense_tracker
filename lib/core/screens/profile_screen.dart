@@ -3,11 +3,11 @@ import 'package:firebase_messaging/firebase_messaging.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/auth_provider.dart';
-import '../providers/push_provider.dart';
-import '../services/notification_service.dart';
-import '../utils/constants.dart';
-import '../utils/formatters.dart';
+import 'package:expense_tracker/features/auth/presentation/providers/auth_provider.dart';
+import 'package:expense_tracker/features/notifications/presentation/providers/push_provider.dart';
+import 'package:expense_tracker/features/notifications/data/notification_service.dart';
+import 'package:expense_tracker/core/utils/constants.dart';
+import 'package:expense_tracker/core/utils/formatters.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});

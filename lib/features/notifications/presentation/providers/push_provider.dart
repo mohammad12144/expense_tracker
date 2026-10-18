@@ -3,8 +3,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/app_services.dart';
-import '../services/notification_service.dart';
+import 'package:expense_tracker/services/app_services.dart';
+import 'package:expense_tracker/features/notifications/data/notification_service.dart';
 
 /// null على المنصات الغير مدعومة (مثل Windows)
 final notificationServiceProvider = Provider<NotificationService?>(

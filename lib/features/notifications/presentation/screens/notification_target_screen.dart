@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/push_provider.dart';
-import '../services/notification_service.dart';
-import '../utils/constants.dart';
+import 'package:expense_tracker/features/notifications/presentation/providers/push_provider.dart';
+import 'package:expense_tracker/features/notifications/data/notification_service.dart';
+import 'package:expense_tracker/core/utils/constants.dart';
 
 /// الشاشة الهدف لأي إشعار (route: /notification)
 class NotificationTargetScreen extends ConsumerWidget {
