@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
+import 'package:expense_tracker/core/config/app_config.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/splash_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/login_screen.dart';
 import 'package:expense_tracker/features/auth/presentation/screens/register_screen.dart';
@@ -31,10 +32,19 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: AppConfig.appName,
       navigatorKey: navigatorKey,
       scaffoldMessengerKey: messengerKey,
       debugShowCheckedModeBanner: false,
       theme: _buildTheme(),
+      // Non-production builds get a DEV ribbon so they are never confused with prod.
+      builder: (context, child) => AppConfig.isProd
+          ? child!
+          : Banner(
+              message: 'DEV',
+              location: BannerLocation.topEnd,
+              child: child,
+            ),
       initialRoute: '/',
       routes: {
         '/': (_) => const SplashScreen(),

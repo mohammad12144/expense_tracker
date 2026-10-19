@@ -6,7 +6,7 @@
     
     
     <application
-        android:label="expense_tracker"
+       android:label="${appName}"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
