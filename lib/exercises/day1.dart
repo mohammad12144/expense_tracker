@@ -1,8 +1,9 @@
+
+// ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-// ---------- تمرين 2: Model + JSON ----------
 class Product {
   final int id;
   final String name;
@@ -22,19 +23,17 @@ class Product {
   String toString() => 'Product($id, $name, $price)';
 }
 
-// ---------- تمرين 1: الأغلى سعرًا مع null-safety ----------
 Product? mostExpensive(List<Product>? products) {
   if (products == null || products.isEmpty) return null;
   Product? best;
   for (final p in products) {
     final price = p.price;
-    if (price == null) continue; // تجاهل المنتجات بدون سعر
+    if (price == null) continue; 
     if (best == null || price > best.price!) best = p;
   }
   return best;
 }
 
-// ---------- تمرين 3: async + timeout + error handling ----------
 Future<Map<String, dynamic>?> fetchPost(int id) async {
   final client = HttpClient();
   try {
