@@ -41,11 +41,12 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       _error = null;
     });
     try {
-      final cred =
-          await ref.read(firebaseAuthProvider).createUserWithEmailAndPassword(
-                email: _emailController.text.trim(),
-                password: _passwordController.text,
-              );
+      final cred = await ref
+          .read(firebaseAuthProvider)
+          .createUserWithEmailAndPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text,
+          );
       await cred.user?.updateDisplayName(_nameController.text.trim());
       if (!mounted) return;
       // Firebase بيسجّل دخول المستخدم الجديد تلقائيًا
@@ -67,8 +68,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSizes.pagePadding),
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: AppSizes.formMaxWidth),
+              constraints: const BoxConstraints(
+                maxWidth: AppSizes.formMaxWidth,
+              ),
               child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -106,8 +108,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                       icon: Icons.lock_outline,
                       controller: _confirmController,
                       isPassword: true,
-                      validator:
-                          Validators.matches(() => _passwordController.text),
+                      validator: Validators.matches(
+                        () => _passwordController.text,
+                      ),
                     ),
                     if (_error != null) ...[
                       const SizedBox(height: 12),
@@ -115,7 +118,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         _error!,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.error),
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ],
                     const SizedBox(height: 24),

@@ -20,11 +20,13 @@ class AuthService {
     required String username,
     required String password,
   }) async {
-    final data = await _api.post('$_base/login', {
-      'username': username,
-      'password': password,
-      'expiresInMins': accessTokenMinutes,
-    }) as Map<String, dynamic>;
+    final data =
+        await _api.post('$_base/login', {
+              'username': username,
+              'password': password,
+              'expiresInMins': accessTokenMinutes,
+            })
+            as Map<String, dynamic>;
 
     await storage.saveTokens(
       accessToken: (data['accessToken'] ?? data['token']) as String,
@@ -37,10 +39,12 @@ class AuthService {
     final refreshToken = await storage.refreshToken;
     if (refreshToken == null) return false;
     try {
-      final data = await _api.post('$_base/refresh', {
-        'refreshToken': refreshToken,
-        'expiresInMins': accessTokenMinutes,
-      }) as Map<String, dynamic>;
+      final data =
+          await _api.post('$_base/refresh', {
+                'refreshToken': refreshToken,
+                'expiresInMins': accessTokenMinutes,
+              })
+              as Map<String, dynamic>;
 
       await storage.saveTokens(
         accessToken: (data['accessToken'] ?? data['token']) as String,
@@ -48,7 +52,6 @@ class AuthService {
       );
       return true;
     } on ApiException catch (e) {
-
       if (e.statusCode == null || (e.statusCode! >= 500 && !e.isAuthError)) {
         rethrow;
       }
@@ -56,5 +59,6 @@ class AuthService {
       return false;
     }
   }
+
   Future<void> logout() => storage.clear();
 }

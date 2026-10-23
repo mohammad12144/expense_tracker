@@ -9,9 +9,7 @@ Future<void> _pumpLogin(WidgetTester tester) async {
   addTearDown(tester.view.reset);
 
   await tester.pumpWidget(
-    const ProviderScope(
-      child: MaterialApp(home: LoginScreen()),
-    ),
+    const ProviderScope(child: MaterialApp(home: LoginScreen())),
   );
 }
 

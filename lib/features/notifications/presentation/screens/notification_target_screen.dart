@@ -12,8 +12,9 @@ class NotificationTargetScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final arg = ModalRoute.of(context)?.settings.arguments;
     final inbox = ref.watch(pushControllerProvider).inbox;
-    final PushMessage? message =
-        arg is PushMessage ? arg : (inbox.isNotEmpty ? inbox.first : null);
+    final PushMessage? message = arg is PushMessage
+        ? arg
+        : (inbox.isNotEmpty ? inbox.first : null);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Notification')),

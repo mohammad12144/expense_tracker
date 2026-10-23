@@ -37,8 +37,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
         prefixIcon: Icon(widget.icon),
         suffixIcon: widget.isPassword
             ? IconButton(
-                icon: Icon(
-                    _obscure ? Icons.visibility_off : Icons.visibility),
+                icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
                 onPressed: () => setState(() => _obscure = !_obscure),
               )
             : null,

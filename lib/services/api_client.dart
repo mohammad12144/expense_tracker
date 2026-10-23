@@ -33,14 +33,13 @@ class ApiClient {
     String url,
     Map<String, dynamic> body, {
     Map<String, String>? headers,
-  }) =>
-      _send(
-        () => _client.post(
-          Uri.parse(url),
-          headers: {'Content-Type': 'application/json', ...?headers},
-          body: jsonEncode(body),
-        ),
-      );
+  }) => _send(
+    () => _client.post(
+      Uri.parse(url),
+      headers: {'Content-Type': 'application/json', ...?headers},
+      body: jsonEncode(body),
+    ),
+  );
 
   Future<dynamic> _send(Future<http.Response> Function() request) async {
     final http.Response response;

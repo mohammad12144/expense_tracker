@@ -14,10 +14,12 @@ class SyncBanner extends ConsumerWidget {
 
     final scheme = Theme.of(context).colorScheme;
     final offline = state.isFromCache;
-    final background =
-        offline ? scheme.errorContainer : scheme.secondaryContainer;
-    final foreground =
-        offline ? scheme.onErrorContainer : scheme.onSecondaryContainer;
+    final background = offline
+        ? scheme.errorContainer
+        : scheme.secondaryContainer;
+    final foreground = offline
+        ? scheme.onErrorContainer
+        : scheme.onSecondaryContainer;
 
     return Container(
       width: double.infinity,
@@ -29,8 +31,11 @@ class SyncBanner extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          Icon(offline ? Icons.cloud_off : Icons.sync,
-              size: 18, color: foreground),
+          Icon(
+            offline ? Icons.cloud_off : Icons.sync,
+            size: 18,
+            color: foreground,
+          ),
           const SizedBox(width: 8),
           Expanded(
             child: Text(state.label, style: TextStyle(color: foreground)),

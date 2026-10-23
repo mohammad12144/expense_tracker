@@ -35,10 +35,12 @@ class FirestoreExpenseRepository implements ExpenseRepository {
   @override
   Stream<SyncState> watchSync() => _query
       .snapshots(includeMetadataChanges: true)
-      .map((snap) => SyncState(
-            isFromCache: snap.metadata.isFromCache,
-            hasPendingWrites: snap.metadata.hasPendingWrites,
-          ))
+      .map(
+        (snap) => SyncState(
+          isFromCache: snap.metadata.isFromCache,
+          hasPendingWrites: snap.metadata.hasPendingWrites,
+        ),
+      )
       .distinct();
 
   @override
@@ -76,9 +78,9 @@ class FirestoreExpenseRepository implements ExpenseRepository {
   }
 
   Map<String, dynamic> _toMap(Expense e) => {
-        'title': e.title,
-        'amount': e.amount,
-        'date': Timestamp.fromDate(e.date),
-        'category': e.category,
-      };
+    'title': e.title,
+    'amount': e.amount,
+    'date': Timestamp.fromDate(e.date),
+    'category': e.category,
+  };
 }

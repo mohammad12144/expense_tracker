@@ -50,8 +50,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
       appBar: AppBar(title: const Text('Products (API demo)')),
       body: Center(
         child: ConstrainedBox(
-          constraints:
-              const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
+          constraints: const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
           child: _buildBody(),
         ),
       ),
@@ -101,13 +100,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 child: Image.network(
                   p.thumbnail,
                   fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => const Icon(Icons.image_not_supported),
+                  errorBuilder: (_, _, _) =>
+                      const Icon(Icons.image_not_supported),
                 ),
               ),
-              title: Text(p.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+              title: Text(
+                p.title,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
               subtitle: Text(p.category),
-              trailing: Text(formatMoney(p.price),
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              trailing: Text(
+                formatMoney(p.price),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           );
         },

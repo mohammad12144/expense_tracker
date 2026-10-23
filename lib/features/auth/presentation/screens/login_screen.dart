@@ -37,7 +37,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       _error = null;
     });
     try {
-      await ref.read(firebaseAuthProvider).signInWithEmailAndPassword(
+      await ref
+          .read(firebaseAuthProvider)
+          .signInWithEmailAndPassword(
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
@@ -59,8 +61,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSizes.pagePadding),
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: AppSizes.formMaxWidth),
+              constraints: const BoxConstraints(
+                maxWidth: AppSizes.formMaxWidth,
+              ),
               child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -97,7 +100,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         _error!,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: Theme.of(context).colorScheme.error),
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ],
                     const SizedBox(height: 24),

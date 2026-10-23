@@ -5,13 +5,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 Expense make(String title, double amount, String category) => Expense(
-    title: title, amount: amount, date: DateTime.now(), category: category);
+  title: title,
+  amount: amount,
+  date: DateTime.now(),
+  category: category,
+);
 
 ProviderContainer makeContainer(List<Expense> data) {
   final container = ProviderContainer(
-    overrides: [
-      expensesProvider.overrideWith((ref) => Stream.value(data)),
-    ],
+    overrides: [expensesProvider.overrideWith((ref) => Stream.value(data))],
   );
   addTearDown(container.dispose);
   // Riverpod 3: بدون مستمع الـ provider بيتوقف، فبنخلي مستمع شغّال طول الاختبار
@@ -21,8 +23,10 @@ ProviderContainer makeContainer(List<Expense> data) {
 
 void main() {
   test('total and this-month are derived from expenses', () async {
-    final c = makeContainer(
-        [make('Coffee', 5, 'Food'), make('Taxi', 8, 'Transport')]);
+    final c = makeContainer([
+      make('Coffee', 5, 'Food'),
+      make('Taxi', 8, 'Transport'),
+    ]);
     await c.read(expensesProvider.future);
 
     expect(c.read(totalProvider), 13);
@@ -30,8 +34,10 @@ void main() {
   });
 
   test('category filter and search', () async {
-    final c = makeContainer(
-        [make('Coffee', 5, 'Food'), make('Taxi', 8, 'Transport')]);
+    final c = makeContainer([
+      make('Coffee', 5, 'Food'),
+      make('Taxi', 8, 'Transport'),
+    ]);
     await c.read(expensesProvider.future);
 
     c.read(categoryFilterProvider.notifier).select('Food');

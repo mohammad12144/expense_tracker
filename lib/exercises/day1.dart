@@ -1,4 +1,3 @@
-
 // ignore_for_file: avoid_print
 import 'dart:async';
 import 'dart:convert';
@@ -12,10 +11,10 @@ class Product {
   const Product({required this.id, required this.name, this.price});
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        price: (json['price'] as num?)?.toDouble(),
-      );
+    id: json['id'] as int,
+    name: json['name'] as String,
+    price: (json['price'] as num?)?.toDouble(),
+  );
 
   Map<String, dynamic> toJson() => {'id': id, 'name': name, 'price': price};
 
@@ -28,7 +27,7 @@ Product? mostExpensive(List<Product>? products) {
   Product? best;
   for (final p in products) {
     final price = p.price;
-    if (price == null) continue; 
+    if (price == null) continue;
     if (best == null || price > best.price!) best = p;
   }
   return best;
@@ -38,7 +37,9 @@ Future<Map<String, dynamic>?> fetchPost(int id) async {
   final client = HttpClient();
   try {
     final uri = Uri.parse('https://jsonplaceholder.typicode.com/posts/$id');
-    final request = await client.getUrl(uri).timeout(const Duration(seconds: 5));
+    final request = await client
+        .getUrl(uri)
+        .timeout(const Duration(seconds: 5));
     final response = await request.close().timeout(const Duration(seconds: 5));
 
     if (response.statusCode != 200) {
@@ -60,7 +61,6 @@ Future<Map<String, dynamic>?> fetchPost(int id) async {
 }
 
 Future<void> main() async {
- 
   final products = [
     const Product(id: 1, name: 'Phone', price: 500),
     const Product(id: 2, name: 'Laptop', price: 1200),
@@ -70,13 +70,11 @@ Future<void> main() async {
   print('Empty list: ${mostExpensive([])}');
   print('Null list: ${mostExpensive(null)}');
 
-  
   const jsonString = '{"id": 7, "name": "Mouse", "price": 25.5}';
   final product = Product.fromJson(jsonDecode(jsonString));
   print('From JSON: $product');
   print('To JSON: ${jsonEncode(product.toJson())}');
 
-  
   final post = await fetchPost(1);
   print('Post title: ${post?['title']}');
 }

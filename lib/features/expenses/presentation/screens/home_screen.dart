@@ -41,12 +41,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   /// Offline, the returned future only completes after the server confirms,
   /// so we never await it.
   void _fire(Future<void> Function() action) {
-    unawaited(action().catchError((Object e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context)
-        ..clearSnackBars()
-        ..showSnackBar(SnackBar(content: Text('Failed: $e')));
-    }));
+    unawaited(
+      action().catchError((Object e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context)
+          ..clearSnackBars()
+          ..showSnackBar(SnackBar(content: Text('Failed: $e')));
+      }),
+    );
   }
 
   // ---------- Actions ----------
@@ -92,12 +94,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (repo == null) return;
     final now = DateTime.now();
     for (var i = 0; i < 50; i++) {
-      _fire(() => repo.add(Expense(
+      _fire(
+        () => repo.add(
+          Expense(
             title: 'Sample ${i + 1}',
             amount: (i + 1) * 3.5,
             date: now.subtract(Duration(days: i)),
             category: Expense.categories[i % Expense.categories.length],
-          )));
+          ),
+        ),
+      );
     }
   }
 
@@ -153,8 +159,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: Center(
         child: ConstrainedBox(
-          constraints:
-              const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
+          constraints: const BoxConstraints(maxWidth: AppSizes.contentMaxWidth),
           child: expensesAsync.when(
             loading: () => const Center(child: CircularProgressIndicator()),
             error: (e, _) => Center(child: Text('Failed to load: $e')),
@@ -186,8 +191,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           const _FilterBar(),
           Row(
             children: [
-              Text('Recent expenses',
-                  style: Theme.of(context).textTheme.titleMedium),
+              Text(
+                'Recent expenses',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
               const Spacer(),
               IconButton(
                 tooltip: _isGrid ? 'Show list' : 'Show grid',
@@ -224,7 +231,9 @@ class _SummaryRow extends ConsumerWidget {
         const SizedBox(width: 12),
         Expanded(
           child: SummaryCard(
-              label: 'This month', value: ref.watch(thisMonthProvider)),
+            label: 'This month',
+            value: ref.watch(thisMonthProvider),
+          ),
         ),
       ],
     );
@@ -265,9 +274,9 @@ class _ExpenseList extends ConsumerWidget {
 
     if (items.isEmpty) {
       return Center(
-        child: Text(hasAny
-            ? 'No results found.'
-            : 'No expenses yet. Tap + to add.'),
+        child: Text(
+          hasAny ? 'No results found.' : 'No expenses yet. Tap + to add.',
+        ),
       );
     }
 

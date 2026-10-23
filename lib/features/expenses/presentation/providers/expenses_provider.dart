@@ -5,8 +5,9 @@ import 'package:expense_tracker/features/expenses/domain/sync_state.dart';
 import 'package:expense_tracker/features/expenses/data/expense_repository.dart';
 import 'package:expense_tracker/features/auth/presentation/providers/auth_provider.dart';
 
-final firestoreProvider =
-    Provider<FirebaseFirestore>((ref) => FirebaseFirestore.instance);
+final firestoreProvider = Provider<FirebaseFirestore>(
+  (ref) => FirebaseFirestore.instance,
+);
 
 /// The repository of the current user. Rebuilds when the user changes.
 final expenseRepositoryProvider = Provider<ExpenseRepository?>((ref) {

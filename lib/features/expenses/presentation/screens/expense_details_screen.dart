@@ -22,15 +22,12 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
     String message;
     try {
       // API تجريبي: بيرجّع id وهمي ولا يحفظ فعليًا
-      final data = await _api.post(
-        'https://jsonplaceholder.typicode.com/posts',
-        {
-          'title': widget.expense.title,
-          'body':
-              '${widget.expense.category} - ${formatMoney(widget.expense.amount)}',
-          'userId': 1,
-        },
-      );
+      final data = await _api.post('https://jsonplaceholder.typicode.com/posts', {
+        'title': widget.expense.title,
+        'body':
+            '${widget.expense.category} - ${formatMoney(widget.expense.amount)}',
+        'userId': 1,
+      });
       message = 'Sent! Server returned id: ${data['id']}';
     } on ApiException catch (e) {
       message = e.message;
@@ -62,8 +59,10 @@ class _ExpenseDetailsScreenState extends State<ExpenseDetailsScreen> {
                 const SizedBox(height: 16),
                 Text(expense.title, style: theme.textTheme.headlineMedium),
                 const SizedBox(height: 8),
-                Text(formatMoney(expense.amount),
-                    style: theme.textTheme.headlineSmall),
+                Text(
+                  formatMoney(expense.amount),
+                  style: theme.textTheme.headlineSmall,
+                ),
                 const SizedBox(height: 24),
                 Card(
                   child: Column(

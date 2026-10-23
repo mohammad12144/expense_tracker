@@ -1,4 +1,3 @@
-
 class Validators {
   static String? required(String? value, {String message = 'Required'}) {
     if (value == null || value.trim().isEmpty) return message;
@@ -25,8 +24,10 @@ class Validators {
   }
 
   /// للتحقق من تطابق حقلين (مثل تأكيد كلمة المرور)
-  static String? Function(String?) matches(String Function() other,
-      {String message = 'Passwords do not match'}) {
+  static String? Function(String?) matches(
+    String Function() other, {
+    String message = 'Passwords do not match',
+  }) {
     return (value) => value != other() ? message : null;
   }
 

@@ -16,13 +16,13 @@ class AuthUser {
   });
 
   factory AuthUser.fromJson(Map<String, dynamic> json) => AuthUser(
-        id: json['id'] as int,
-        username: json['username'] as String,
-        email: (json['email'] as String?) ?? '',
-        firstName: (json['firstName'] as String?) ?? '',
-        lastName: (json['lastName'] as String?) ?? '',
-        image: (json['image'] as String?) ?? '',
-      );
+    id: json['id'] as int,
+    username: json['username'] as String,
+    email: (json['email'] as String?) ?? '',
+    firstName: (json['firstName'] as String?) ?? '',
+    lastName: (json['lastName'] as String?) ?? '',
+    image: (json['image'] as String?) ?? '',
+  );
 
   String get fullName => '$firstName $lastName'.trim();
 }

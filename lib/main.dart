@@ -61,18 +61,22 @@ class MyApp extends StatelessWidget {
     return base.copyWith(
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 16,
+        ),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          shape:
-              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
         ),
       ),
       textTheme: base.textTheme.copyWith(
-        headlineMedium: base.textTheme.headlineMedium
-            ?.copyWith(fontWeight: FontWeight.bold),
+        headlineMedium: base.textTheme.headlineMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
       ),
       cardTheme: CardThemeData(
         elevation: 1,

@@ -3,7 +3,8 @@ import 'package:flutter/foundation.dart';
 
 /// المفتاح العام (Web Push certificate) من Firebase Console.
 /// هو مفتاح عام مش سر، بس لازم تلصق قيمتك هون.
-const String kVapidKey = 'BAjO30s8QRivSGW0R7iNkC-0pjEpf0B4f8sp1beff8_GvqiLX5lZbv2hTpW0842vYL4EJVIxSnI5siTFcVgkGz4';
+const String kVapidKey =
+    'BAjO30s8QRivSGW0R7iNkC-0pjEpf0B4f8sp1beff8_GvqiLX5lZbv2hTpW0842vYL4EJVIxSnI5siTFcVgkGz4';
 
 /// المسارات المسموح فتحها من إشعار (whitelist). وسّعها لاحقًا عند الحاجة.
 const Set<String> kAllowedDeepLinks = {'/notification'};
@@ -17,10 +18,10 @@ class PushMessage {
   final Map<String, dynamic> data;
 
   factory PushMessage.fromRemote(RemoteMessage m) => PushMessage(
-        title: m.notification?.title,
-        body: m.notification?.body,
-        data: Map<String, dynamic>.from(m.data),
-      );
+    title: m.notification?.title,
+    body: m.notification?.body,
+    data: Map<String, dynamic>.from(m.data),
+  );
 
   /// الـ deep link القادم من الـ payload. أي قيمة غير مسموحة بتروح للشاشة الافتراضية.
   String get route {

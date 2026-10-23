@@ -59,7 +59,10 @@ class ProfileScreen extends ConsumerWidget {
                         await ref.read(firebaseAuthProvider).signOut();
                         if (!context.mounted) return;
                         Navigator.pushNamedAndRemoveUntil(
-                            context, '/login', (route) => false);
+                          context,
+                          '/login',
+                          (route) => false,
+                        );
                       },
                     ),
                   ],
@@ -75,17 +78,16 @@ class _NotificationsSection extends ConsumerWidget {
 
   // `_` بيغطي denied و deniedPermanently وأي قيمة جديدة بالمستقبل
   String _statusLabel(AuthorizationStatus? s) => switch (s) {
-        null => 'Checking...',
-        AuthorizationStatus.authorized => 'Enabled',
-        AuthorizationStatus.provisional => 'Enabled (provisional)',
-        AuthorizationStatus.notDetermined => 'Not enabled yet',
-        _ => 'Blocked in browser/system settings',
-      };
+    null => 'Checking...',
+    AuthorizationStatus.authorized => 'Enabled',
+    AuthorizationStatus.provisional => 'Enabled (provisional)',
+    AuthorizationStatus.notDetermined => 'Not enabled yet',
+    _ => 'Blocked in browser/system settings',
+  };
 
   // منعرض جزء من الـ token بس (ما بنعرضه كامل ولا بنطبعه بالـ logs)
-  String _shortToken(String t) => t.length > 16
-      ? '${t.substring(0, 8)}...${t.substring(t.length - 6)}'
-      : t;
+  String _shortToken(String t) =>
+      t.length > 16 ? '${t.substring(0, 8)}...${t.substring(t.length - 6)}' : t;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,7 +96,8 @@ class _NotificationsSection extends ConsumerWidget {
         leading: Icon(Icons.notifications_off_outlined),
         title: Text('Push notifications'),
         subtitle: Text(
-            'Not supported on this platform (use Chrome, Android or iOS).'),
+          'Not supported on this platform (use Chrome, Android or iOS).',
+        ),
       );
     }
 
@@ -129,7 +132,8 @@ class _NotificationsSection extends ConsumerWidget {
                 final messenger = ScaffoldMessenger.of(context);
                 await Clipboard.setData(ClipboardData(text: token));
                 messenger.showSnackBar(
-                    const SnackBar(content: Text('Token copied')));
+                  const SnackBar(content: Text('Token copied')),
+                );
               },
             ),
           ),

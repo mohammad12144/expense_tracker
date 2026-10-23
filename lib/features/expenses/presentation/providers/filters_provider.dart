@@ -4,7 +4,8 @@ import 'package:expense_tracker/features/expenses/presentation/providers/expense
 
 final categoryFilterProvider =
     NotifierProvider<CategoryFilterNotifier, String?>(
-        CategoryFilterNotifier.new);
+      CategoryFilterNotifier.new,
+    );
 
 class CategoryFilterNotifier extends Notifier<String?> {
   @override
@@ -14,8 +15,9 @@ class CategoryFilterNotifier extends Notifier<String?> {
 }
 
 /// نص البحث
-final searchQueryProvider =
-    NotifierProvider<SearchQueryNotifier, String>(SearchQueryNotifier.new);
+final searchQueryProvider = NotifierProvider<SearchQueryNotifier, String>(
+  SearchQueryNotifier.new,
+);
 
 class SearchQueryNotifier extends Notifier<String> {
   @override

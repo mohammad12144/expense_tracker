@@ -10,7 +10,7 @@ class AuthenticatedClient {
 
   Future<bool>? _refreshing;
 
-   AuthenticatedClient({
+  AuthenticatedClient({
     required this._api,
     required this._storage,
     required this._refresh,
@@ -36,8 +36,10 @@ class AuthenticatedClient {
       if (!refreshed) {
         debugPrint('[auth] refresh rejected -> session expired');
         _onSessionExpired();
-        throw const ApiException('Session expired. Please log in again.',
-            statusCode: 401);
+        throw const ApiException(
+          'Session expired. Please log in again.',
+          statusCode: 401,
+        );
       }
       debugPrint('[auth] token refreshed -> retrying request');
       return await call(await _headers()); // إعادة واحدة فقط

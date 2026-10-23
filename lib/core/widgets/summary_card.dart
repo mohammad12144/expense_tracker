@@ -17,8 +17,10 @@ class SummaryCard extends StatelessWidget {
           children: [
             Text(label, style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: 8),
-            Text(formatMoney(value),
-                style: Theme.of(context).textTheme.headlineSmall),
+            Text(
+              formatMoney(value),
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
           ],
         ),
       ),

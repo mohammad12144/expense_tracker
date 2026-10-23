@@ -66,8 +66,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
           child: SingleChildScrollView(
             padding: const EdgeInsets.all(AppSizes.pagePadding),
             child: ConstrainedBox(
-              constraints:
-                  const BoxConstraints(maxWidth: AppSizes.formMaxWidth),
+              constraints: const BoxConstraints(
+                maxWidth: AppSizes.formMaxWidth,
+              ),
               child: Form(
                 key: _formKey,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -87,8 +88,9 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       label: 'Amount',
                       icon: Icons.attach_money,
                       controller: _amountController,
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: true),
+                      keyboardType: const TextInputType.numberWithOptions(
+                        decimal: true,
+                      ),
                       validator: Validators.amount,
                     ),
                     const SizedBox(height: 16),
@@ -102,7 +104,8 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           errorText: _dateError ? 'Pick a date' : null,
                         ),
                         child: Text(
-                            _date == null ? 'Select date' : formatDate(_date!)),
+                          _date == null ? 'Select date' : formatDate(_date!),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 16),

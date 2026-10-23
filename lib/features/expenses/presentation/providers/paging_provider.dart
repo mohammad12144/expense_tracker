@@ -19,8 +19,9 @@ class VisibleCountNotifier extends Notifier<int> {
   void reset() => state = kPageSize;
 }
 
-final visibleCountProvider =
-    NotifierProvider<VisibleCountNotifier, int>(VisibleCountNotifier.new);
+final visibleCountProvider = NotifierProvider<VisibleCountNotifier, int>(
+  VisibleCountNotifier.new,
+);
 
 /// The current page of the filtered expenses.
 final pagedExpensesProvider = Provider<List<Expense>>((ref) {

@@ -39,18 +39,18 @@ class PushState {
     bool clearError = false,
     bool? busy,
     List<PushMessage>? inbox,
-  }) =>
-      PushState(
-        status: status ?? this.status,
-        token: token ?? this.token,
-        error: clearError ? null : (error ?? this.error),
-        busy: busy ?? this.busy,
-        inbox: inbox ?? this.inbox,
-      );
+  }) => PushState(
+    status: status ?? this.status,
+    token: token ?? this.token,
+    error: clearError ? null : (error ?? this.error),
+    busy: busy ?? this.busy,
+    inbox: inbox ?? this.inbox,
+  );
 }
 
-final pushControllerProvider =
-    NotifierProvider<PushController, PushState>(PushController.new);
+final pushControllerProvider = NotifierProvider<PushController, PushState>(
+  PushController.new,
+);
 
 class PushController extends Notifier<PushState> {
   final List<StreamSubscription<PushMessage>> _subs = [];
@@ -83,7 +83,8 @@ class PushController extends Notifier<PushState> {
     final service = ref.read(notificationServiceProvider);
     if (service == null) {
       state = state.copyWith(
-          error: 'Push notifications are not supported on this platform.');
+        error: 'Push notifications are not supported on this platform.',
+      );
       return;
     }
     state = state.copyWith(busy: true, clearError: true);
@@ -106,10 +107,12 @@ class PushController extends Notifier<PushState> {
       _subs.add(service.onForeground.listen(_onForeground));
       // onMessageOpenedApp للموبايل (الويب بيتعامل مع النقر بطريقة مختلفة)
       if (!kIsWeb) {
-        _subs.add(service.onOpened.listen((m) {
-          _remember(m);
-          _go(m);
-        }));
+        _subs.add(
+          service.onOpened.listen((m) {
+            _remember(m);
+            _go(m);
+          }),
+        );
       }
     }
 
@@ -123,7 +126,9 @@ class PushController extends Notifier<PushState> {
 
   void _remember(PushMessage m) {
     final list = [m, ...state.inbox];
-    state = state.copyWith(inbox: list.length > 20 ? list.sublist(0, 20) : list);
+    state = state.copyWith(
+      inbox: list.length > 20 ? list.sublist(0, 20) : list,
+    );
   }
 
   void _go(PushMessage m) =>

@@ -1,78 +1,91 @@
 # Expense Tracker
 
-A small Flutter app for tracking personal expenses. Built as the Mini App v1
-during the Grids Apps Training (Full Stack Mobile App Development, Flutter track).
+A Flutter expense tracker built with Firebase (Auth + Cloud Firestore), Riverpod and Material 3.
+Built as part of the Grids Apps Full Stack Mobile App Development training (Flutter track, Days 1-15).
 
 ## Features
 
-- Splash, Login and Register screens with form validation
-- Home dashboard: total and this-month summary cards
-- Add expense form (title, amount, date picker, category) with validation
-- Expense details screen
-- Swipe to delete with Undo
-- Local persistence with `shared_preferences` (expenses survive app restarts)
-- Search by title, filter by category, list/grid toggle
-- Loading and empty states
-- Central app theme and reusable widgets
-- Responsive layout (content is centered with a max width on wide windows)
+- Register / login with Firebase Auth (token kept in secure storage)
+- Add, view and delete expenses, stored per user in Firestore (`users/{uid}/expenses/{id}`)
+- Search and category filter (Food, Transport, Bills, Shopping, Other)
+- Summary cards: total and this-month spending
+- Offline support: cached data stays available, with a sync banner ("Offline - showing saved data")
+- Client-side paging (20 items per page with a "Load more" button)
+- Push notifications (FCM web push) with a deep-link allowlist
+- Dev / prod Android flavors with an `ENV` config
 
-> Login and Register are UI only for now. They use a simulated delay and no real backend.
+## Screenshots
 
-## Getting started
+| Home | Offline | Push |
+|------|---------|------|
+| ![Home](docs/screenshots/home.png) | ![Offline](docs/screenshots/offline.png) | ![Push](docs/screenshots/push.png) |
 
-```bash
-flutter pub get
-flutter run -d windows   # or any connected device / emulator
-```
+## Tech stack
 
-Analyze the code:
-
-```bash
-flutter analyze
-```
+Flutter (Material 3), Riverpod 3, Firebase Auth, Cloud Firestore, Firebase Cloud Messaging,
+flutter_secure_storage, GitHub Actions.
 
 ## Project structure
 
 ```
 lib/
-  main.dart                 app entry, theme and routes
-  models/
-    expense.dart            Expense model (toJson / fromJson)
-  screens/
-    splash_screen.dart
-    login_screen.dart
-    register_screen.dart
-    home_screen.dart
-    add_expense_screen.dart
-    expense_details_screen.dart
-  services/
-    expense_storage.dart    load/save expenses with shared_preferences
-  utils/
-    validators.dart         shared form validators
-    formatters.dart         date and money formatting
-    constants.dart          shared sizes
-  widgets/
-    app_logo.dart
-    custom_text_field.dart
-    loading_button.dart
-    summary_card.dart
-    expense_tile.dart       list tile and grid tile
-    category_filter.dart
-  exercises/
-    day1.dart               Dart exercises (run with `dart run`)
+  core/            shared screens, widgets, utils, config (AppConfig)
+  features/
+    auth/          domain / presentation (providers, screens)
+    expenses/      data (repository) / domain / presentation (providers, screens, widgets)
+    notifications/ data (NotificationService) / presentation
+  services/        legacy services (token storage, API client)
+test/              unit, provider and widget tests
 ```
 
-## Known issues
+Each feature is split into `data`, `domain` and `presentation`. Providers expose state to the UI;
+the repository is the only class that talks to Firestore.
 
-- Login and Register do not talk to a backend yet (planned: REST API integration).
-- Editing an existing expense is not implemented.
-- Data is stored locally only and is not synced between devices.
-- Resizing the window to an extremely narrow width (below roughly 72 px per tile)
-  can trigger a ListTile layout exception on desktop.
+## Getting started
 
-## Roadmap
+Requirements: Flutter SDK, a Firebase project (Auth + Firestore enabled).
 
-- REST API integration (loading / error states)
-- Authentication with token handling
-- State management (Riverpod or BLoC)
-- Tests and release build
+```
+flutter pub get
+flutter run -d chrome
+```
+
+If Chrome fails to launch, use:
+
+```
+flutter run -d web-server --web-port 5000
+```
+
+Notes:
+- Firebase config lives in `lib/firebase_options.dart` and `android/app/google-services.json`
+  (public client config, not a secret).
+- Web push needs the VAPID key in `lib/features/notifications/data/notification_service.dart`.
+
+## Tests
+
+```
+flutter analyze
+flutter test
+```
+
+## Build and release (Android)
+
+```
+flutter build apk --release --flavor prod --dart-define=ENV=prod
+```
+
+Release signing uses `android/key.properties` (never committed). See [RELEASE.md](RELEASE.md).
+CI (`.github/workflows/ci.yml`) runs analyze, tests and an Android build on every pull request.
+
+## Security
+
+See [SECURITY.md](SECURITY.md) for the checklist (secure token storage, key restrictions, Firestore rules).
+
+## Known limitations
+
+- Tested mainly on web (Chrome); the Windows desktop build is blocked by a local C++ toolchain issue.
+- Both Android flavors share one applicationId (Firebase is registered for one package).
+- iOS is not covered.
+- Paging is client-side because totals need the full list.
+
+More details: [docs/TECHNICAL_SUMMARY.md](docs/TECHNICAL_SUMMARY.md)

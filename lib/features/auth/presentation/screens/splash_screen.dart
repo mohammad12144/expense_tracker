@@ -36,8 +36,6 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      body: Center(child: AppLogo(size: 90)),
-    );
+    return const Scaffold(body: Center(child: AppLogo(size: 90)));
   }
 }

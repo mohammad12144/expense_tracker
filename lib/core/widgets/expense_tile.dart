@@ -31,8 +31,10 @@ class ExpenseTile extends StatelessWidget {
           leading: CircleAvatar(child: Icon(expense.icon)),
           title: Text(expense.title),
           subtitle: Text('${expense.category} • ${expense.dateLabel}'),
-          trailing: Text(formatMoney(expense.amount),
-              style: const TextStyle(fontWeight: FontWeight.bold)),
+          trailing: Text(
+            formatMoney(expense.amount),
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
           onTap: onTap,
         ),
       ),
@@ -45,7 +47,11 @@ class ExpenseGridTile extends StatelessWidget {
   final Expense expense;
   final VoidCallback onTap;
 
-  const ExpenseGridTile({super.key, required this.expense, required this.onTap});
+  const ExpenseGridTile({
+    super.key,
+    required this.expense,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +68,10 @@ class ExpenseGridTile extends StatelessWidget {
               const SizedBox(height: 8),
               Text(expense.title, maxLines: 1, overflow: TextOverflow.ellipsis),
               const SizedBox(height: 4),
-              Text(formatMoney(expense.amount),
-                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              Text(
+                formatMoney(expense.amount),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ],
           ),
         ),

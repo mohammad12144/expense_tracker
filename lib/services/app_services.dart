@@ -24,6 +24,8 @@ void _sessionExpired() {
     ..showSnackBar(
       const SnackBar(content: Text('Session expired. Please log in again.')),
     );
-  navigatorKey.currentState
-      ?.pushNamedAndRemoveUntil('/login', (route) => false);
+  navigatorKey.currentState?.pushNamedAndRemoveUntil(
+    '/login',
+    (route) => false,
+  );
 }

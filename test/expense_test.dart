@@ -40,7 +40,11 @@ void main() {
 
     test('fromJson throws on missing required fields', () {
       expect(
-        () => Expense.fromJson({'amount': 1, 'date': '2026-01-01', 'category': 'Food'}),
+        () => Expense.fromJson({
+          'amount': 1,
+          'date': '2026-01-01',
+          'category': 'Food',
+        }),
         throwsA(isA<TypeError>()),
       );
     });
@@ -63,8 +67,13 @@ void main() {
     });
 
     test('categories list has the five known categories', () {
-      expect(Expense.categories,
-          ['Food', 'Transport', 'Bills', 'Shopping', 'Other']);
+      expect(Expense.categories, [
+        'Food',
+        'Transport',
+        'Bills',
+        'Shopping',
+        'Other',
+      ]);
     });
   });
 }
